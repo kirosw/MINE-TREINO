@@ -233,18 +233,29 @@ button.secondary:hover {
   background: rgba(17, 25, 34, 0.62);
 }
 
-.hotbar-slot {
+.item-slot {
   position: relative;
-  width: 56px;
-  height: 56px;
   border: 2px solid rgba(255, 255, 255, 0.23);
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);
+  color: #fff;
   display: grid;
+  font-size: 12px;
+  font-weight: 400;
   place-items: center;
+  padding: 0;
 }
 
-.hotbar-slot.selected {
+.item-slot:hover {
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.hotbar-slot {
+  width: 54px;
+  height: 58px;
+}
+
+.item-slot.selected {
   border-color: #fff;
   box-shadow: 0 0 0 2px rgba(80, 176, 117, 0.95);
 }
@@ -256,6 +267,10 @@ button.secondary:hover {
   border-radius: 2px;
   image-rendering: pixelated;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.12);
+}
+
+.item-slot.food .block-swatch {
+  border-radius: 50%;
 }
 
 .slot-number {
@@ -276,6 +291,79 @@ button.secondary:hover {
   font-size: 10px;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.slot-count {
+  position: absolute;
+  right: 5px;
+  top: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+#survival-bars {
+  position: fixed;
+  z-index: 10;
+  left: 50%;
+  bottom: 92px;
+  display: grid;
+  gap: 5px;
+  transform: translateX(-50%);
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(17, 25, 34, 0.5);
+}
+
+.stat-row {
+  display: flex;
+  gap: 4px;
+  height: 14px;
+}
+
+.stat-unit {
+  width: 18px;
+  height: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  background:
+    linear-gradient(90deg, var(--stat-color) calc(var(--fill) * 100%), rgba(255, 255, 255, 0.12) 0);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.25);
+}
+
+.inventory-panel {
+  position: fixed;
+  z-index: 12;
+  left: 50%;
+  top: 50%;
+  width: min(520px, calc(100vw - 24px));
+  transform: translate(-50%, -50%);
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(20, 29, 38, 0.88);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.38);
+}
+
+.inventory-title {
+  margin-bottom: 10px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+#inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.inventory-slot {
+  aspect-ratio: 1;
+  width: 100%;
+  height: auto;
+  min-height: 44px;
 }
 
 .message {
@@ -312,8 +400,21 @@ button.secondary:hover {
   }
 
   .hotbar-slot {
-    width: 46px;
+    width: 38px;
     height: 50px;
+  }
+
+  #hotbar {
+    gap: 4px;
+    padding: 6px;
+  }
+
+  #survival-bars {
+    bottom: 82px;
+  }
+
+  .stat-unit {
+    width: 14px;
   }
 
   .slot-name {

@@ -2,6 +2,7 @@
   "use strict";
 
   const { BlockId } = window.VoxelBlocks;
+  const { itemForBlock } = window.VoxelItems;
   const { VoxelWorld } = window.VoxelWorld;
   const { InputController } = window.VoxelControls;
   const { Player } = window.VoxelPlayer;
@@ -56,6 +57,13 @@
     player = new Player(camera, world, input);
     player.onStep = () => audio.playStep();
     player.onJump = () => audio.playJump();
+    player.onDamage = (amount, source) => {
+      audio.playHurt();
+      ui.showMessage(source === "fome" ? "Voce esta faminto" : `Dano recebido: ${Math.ceil(amount)}`);
+    };
+    player.onDeath = () => ui.showMessage("Voce caiu. Voltando ao spawn.");
+    player.onStatsChanged = (health, hunger) => ui.updateStats(health, hunger);
+    ui.onInventoryChanged = scheduleProgressSave;
     creatures = new CreatureManager(scene, world, player, audio, ui);
     createHighlight();
 
@@ -103,9 +111,18 @@
 
   function handleHotbarKeys(event) {
     const number = Number(event.key);
-    if (number >= 1 && number <= 6) {
+    if (number >= 1 && number <= 9) {
       ui.setSelected(number - 1);
       scheduleProgressSave();
+    }
+
+    if (event.code === "KeyE" && !event.repeat) {
+      const opened = ui.toggleInventory();
+      if (opened && document.exitPointerLock) {
+        document.exitPointerLock();
+      } else if (!opened) {
+        input.lockPointer();
+      }
     }
 
     if (event.code === "KeyC" && !event.repeat) {
@@ -168,17 +185,45 @@
   function breakTargetBlock() {
     const target = getLookTarget();
     if (!target || target.block.y <= 0) return;
+    const blockId = world.getBlock(target.block.x, target.block.y, target.block.z);
     if (world.setBlock(target.block.x, target.block.y, target.block.z, BlockId.AIR)) {
+      const item = itemForBlock(blockId);
+      if (item && !player.creative) {
+        ui.addItem(item.id, 1);
+      }
       audio.playBreak();
     }
   }
 
   function placeSelectedBlock() {
+    const selectedItem = ui.getSelectedItem();
+    if (selectedItem && selectedItem.type === "food") {
+      eatSelectedFood(selectedItem);
+      return;
+    }
+
+    if (!selectedItem || selectedItem.type !== "block") {
+      ui.showMessage("Selecione um bloco para colocar.");
+      return;
+    }
+
     const target = getLookTarget();
     if (!target || !target.adjacent) return;
     if (!player.canPlaceAt(target.adjacent)) return;
-    if (world.setBlock(target.adjacent.x, target.adjacent.y, target.adjacent.z, ui.getSelectedBlock())) {
+    if (world.setBlock(target.adjacent.x, target.adjacent.y, target.adjacent.z, selectedItem.blockId)) {
+      if (!player.creative) ui.decrementSelected(1);
       audio.playPlace();
+    }
+  }
+
+  function eatSelectedFood(foodItem) {
+    if (player.eat(foodItem)) {
+      ui.decrementSelected(1);
+      audio.playEat();
+      ui.showMessage(`${foodItem.name} consumido`);
+      scheduleProgressSave();
+    } else {
+      ui.showMessage("Voce nao precisa comer agora.");
     }
   }
 
@@ -211,6 +256,14 @@
       ui.setSelected(progress.selectedBlock);
     }
 
+    if (Array.isArray(progress.inventory) && progress.inventory.length > 0) {
+      ui.setInventory(progress.inventory);
+    }
+
+    if (progress.survival) {
+      player.setSurvivalStats(progress.survival);
+    }
+
     ui.showSaveStatus("Progresso carregado");
   }
 
@@ -225,7 +278,9 @@
       },
       creative: player.creative,
       selectedBlock: ui.selectedIndex,
-      edits: world.exportEdits()
+      edits: world.exportEdits(),
+      inventory: ui.serializeInventory(),
+      survival: player.exportSurvivalStats()
     });
   }
 })();

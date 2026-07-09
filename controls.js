@@ -26,12 +26,16 @@
 
     handleKeyDown(event) {
       this.keys.add(event.code);
-      if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyC", "Space", "ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight"].includes(event.code)) {
+      if (["KeyW", "KeyA", "KeyS", "KeyD", "KeyC", "KeyE", "Space", "ShiftLeft", "ShiftRight", "ControlLeft", "ControlRight"].includes(event.code)) {
         event.preventDefault();
       }
     }
 
     handleMouseDown(event) {
+      if (event.target.closest?.(".inventory-panel")) {
+        return;
+      }
+
       if (!this.pointerLocked) {
         this.lockPointer();
         return;

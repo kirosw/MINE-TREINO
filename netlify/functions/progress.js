@@ -103,7 +103,27 @@ function sanitizeProgress(progress) {
     creative: Boolean(safe.creative),
     selectedBlock: Number.isInteger(safe.selectedBlock) ? safe.selectedBlock : 0,
     edits: Array.isArray(safe.edits) ? safe.edits.slice(0, 6000) : [],
+    inventory: sanitizeInventory(safe.inventory),
+    survival: sanitizeSurvival(safe.survival),
     updatedAt: new Date().toISOString()
+  };
+}
+
+function sanitizeInventory(inventory) {
+  if (!Array.isArray(inventory)) return [];
+  return inventory.slice(0, 36).map((stack) => {
+    if (!stack || typeof stack !== "object") return null;
+    const id = String(stack.id || "").slice(0, 40);
+    const count = Math.max(1, Math.min(64, Number(stack.count) || 1));
+    return id ? { id, count } : null;
+  });
+}
+
+function sanitizeSurvival(survival) {
+  const source = survival && typeof survival === "object" ? survival : {};
+  return {
+    health: Math.max(0, Math.min(20, finiteNumber(source.health, 20))),
+    hunger: Math.max(0, Math.min(20, finiteNumber(source.hunger, 20)))
   };
 }
 
