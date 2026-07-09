@@ -58,6 +58,15 @@
       }, 60);
     }
 
+    playCreature(passive) {
+      if (passive) {
+        this.playTone({ frequency: 260 + Math.random() * 70, duration: 0.12, type: "triangle", gain: 0.045, slideTo: 190 });
+        return;
+      }
+      this.playNoise({ duration: 0.16, gain: 0.12, frequency: 180, type: "lowpass", decay: 0.03 });
+      this.playTone({ frequency: 86, duration: 0.18, type: "sawtooth", gain: 0.035, slideTo: 52 });
+    }
+
     playNoise({ duration, gain, frequency, type, decay }) {
       this.ensureContext();
       if (!this.enabled || !this.context) return;

@@ -11,6 +11,13 @@
     <div class="start-panel">
       <h1>Voxel Livre</h1>
       <p>Um prototipo sandbox voxel original para navegador.</p>
+      <div class="login-box">
+        <label for="player-name">Login local</label>
+        <div class="login-row">
+          <input id="player-name" maxlength="18" autocomplete="nickname" placeholder="Seu nome" />
+          <span id="login-status">Salva no navegador</span>
+        </div>
+      </div>
       <button id="play-button">Jogar</button>
       <button id="reset-button" class="secondary">Resetar mundo salvo</button>
       <div class="instructions">
@@ -31,6 +38,7 @@
   <div id="game-ui" class="hidden">
     <div id="fps-counter">FPS 0</div>
     <div id="mode-status">Sobrevivencia</div>
+    <div id="player-status">Jogador</div>
     <div id="save-status"></div>
     <div id="crosshair"></div>
     <div id="hotbar"></div>
@@ -44,6 +52,7 @@
   <script src="controls.js"></script>
   <script src="player.js"></script>
   <script src="audio.js"></script>
+  <script src="entities.js"></script>
   <script src="ui.js"></script>
   <script src="main.js"></script>
 </body>

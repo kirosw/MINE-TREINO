@@ -8,15 +8,42 @@
       this.startScreen = document.getElementById("start-screen");
       this.playButton = document.getElementById("play-button");
       this.resetButton = document.getElementById("reset-button");
+      this.playerNameInput = document.getElementById("player-name");
+      this.loginStatus = document.getElementById("login-status");
       this.gameUi = document.getElementById("game-ui");
       this.hotbar = document.getElementById("hotbar");
       this.fpsCounter = document.getElementById("fps-counter");
       this.modeStatus = document.getElementById("mode-status");
+      this.playerStatus = document.getElementById("player-status");
       this.saveStatus = document.getElementById("save-status");
       this.message = document.getElementById("message");
       this.selectedIndex = 0;
       this.slots = [];
+      this.playerNameKey = "voxel-livre-player-name";
+      this.loadPlayerName();
       this.buildHotbar();
+    }
+
+    loadPlayerName() {
+      const storedName = localStorage.getItem(this.playerNameKey) || "Jogador";
+      this.playerNameInput.value = storedName;
+      this.setPlayerName(storedName, false);
+    }
+
+    getPlayerName() {
+      const rawName = this.playerNameInput.value.trim() || "Jogador";
+      return rawName.replace(/[^\w -]/g, "").slice(0, 18) || "Jogador";
+    }
+
+    setPlayerName(name, save = true) {
+      const cleanName = (name || "Jogador").replace(/[^\w -]/g, "").slice(0, 18) || "Jogador";
+      this.playerNameInput.value = cleanName;
+      this.playerStatus.textContent = cleanName;
+      if (save) {
+        localStorage.setItem(this.playerNameKey, cleanName);
+        this.loginStatus.textContent = "Login salvo";
+      }
+      return cleanName;
     }
 
     buildHotbar() {

@@ -31,11 +31,13 @@ http://127.0.0.1:5174/
 
 ## Recursos
 
+- Login local com nome salvo no navegador
 - Mundo voxel procedural por chunks
 - Renderizacao apenas de faces visiveis
 - Texturas pixeladas originais geradas por codigo
 - Blocos de grama, terra, pedra, madeira, folhas e areia
 - Arvores simples
+- Criaturas voxeladas originais com caminhada, sons e comportamento simples
 - Primeira pessoa com colisao, gravidade e pulo
 - Modo criativo com voo
 - Sons procedurais via Web Audio

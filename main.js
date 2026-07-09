@@ -5,6 +5,7 @@
   const { VoxelWorld } = window.VoxelWorld;
   const { InputController } = window.VoxelControls;
   const { Player } = window.VoxelPlayer;
+  const { CreatureManager } = window.VoxelEntities;
   const ui = window.VoxelUI;
   const audio = window.VoxelAudio;
 
@@ -14,6 +15,7 @@
   let world;
   let player;
   let input;
+  let creatures;
   let highlight;
   let lastTime = performance.now();
   let fpsFrames = 0;
@@ -51,6 +53,7 @@
     player = new Player(camera, world, input);
     player.onStep = () => audio.playStep();
     player.onJump = () => audio.playJump();
+    creatures = new CreatureManager(scene, world, player, audio, ui);
     createHighlight();
 
     world.generateAround(player.position);
@@ -59,8 +62,17 @@
     ui.playButton.addEventListener("click", () => {
       running = true;
       audio.unlock();
+      const playerName = ui.setPlayerName(ui.getPlayerName());
       ui.showGame();
+      ui.showMessage(`Bem-vindo, ${playerName}`);
+      creatures.seedNearPlayer();
       input.lockPointer();
+    });
+
+    ui.playerNameInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        ui.playButton.click();
+      }
     });
 
     ui.resetButton.addEventListener("click", () => {
@@ -106,6 +118,7 @@
     if (running) {
       player.update(dt);
       world.generateAround(player.position);
+      creatures.update(dt);
       updateTargetHighlight();
     }
 
