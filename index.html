@@ -27,9 +27,10 @@
         <span>Shift correr</span>
         <span>Ctrl descer no criativo</span>
         <span>C alternar criativo</span>
+        <span>E abrir inventario</span>
         <span>Botao esquerdo quebrar</span>
-        <span>Botao direito colocar</span>
-        <span>1-6 selecionar bloco</span>
+        <span>Botao direito colocar/comer</span>
+        <span>1-9 selecionar slot</span>
         <span>ESC libera o mouse</span>
       </div>
     </div>
@@ -39,15 +40,24 @@
     <div id="fps-counter">FPS 0</div>
     <div id="mode-status">Sobrevivencia</div>
     <div id="player-status">Jogador</div>
+    <div id="survival-bars">
+      <div id="health-bar" class="stat-row"></div>
+      <div id="hunger-bar" class="stat-row"></div>
+    </div>
     <div id="save-status"></div>
     <div id="crosshair"></div>
     <div id="hotbar"></div>
+    <div id="inventory-panel" class="inventory-panel hidden">
+      <div class="inventory-title">Mochila</div>
+      <div id="inventory-grid"></div>
+    </div>
   </div>
 
   <div id="message" class="message hidden"></div>
 
   <script src="vendor/three.min.js"></script>
   <script src="blocks.js"></script>
+  <script src="items.js"></script>
   <script src="world.js"></script>
   <script src="controls.js"></script>
   <script src="player.js"></script>

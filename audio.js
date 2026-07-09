@@ -67,6 +67,16 @@
       this.playTone({ frequency: 86, duration: 0.18, type: "sawtooth", gain: 0.035, slideTo: 52 });
     }
 
+    playEat() {
+      this.playNoise({ duration: 0.07, gain: 0.13, frequency: 540, type: "bandpass", decay: 0.012 });
+      setTimeout(() => this.playNoise({ duration: 0.06, gain: 0.09, frequency: 460, type: "bandpass", decay: 0.012 }), 75);
+    }
+
+    playHurt() {
+      this.playNoise({ duration: 0.12, gain: 0.2, frequency: 240, type: "lowpass", decay: 0.02 });
+      this.playTone({ frequency: 120, duration: 0.1, type: "sawtooth", gain: 0.035, slideTo: 70 });
+    }
+
     playNoise({ duration, gain, frequency, type, decay }) {
       this.ensureContext();
       if (!this.enabled || !this.context) return;

@@ -32,15 +32,19 @@ O schema esta em `sql/neon_schema.sql`. A funcao `/.netlify/functions/progress` 
 - Ctrl: descer no modo criativo
 - Shift: correr/acelerar
 - C: alternar modo criativo
+- E: abrir ou fechar inventario
 - Clique esquerdo: quebrar bloco
-- Clique direito: colocar bloco
-- 1-6: trocar bloco selecionado
+- Clique direito: colocar bloco ou comer alimento selecionado
+- 1-9: trocar slot da hotbar
 - ESC: liberar o mouse
 
 ## Recursos
 
 - Login local com nome salvo no navegador
 - Persistencia remota opcional no Neon para usuarios e progresso
+- Hotbar com 9 slots e inventario com 36 espacos
+- Sistema de vida, fome, dano, queda e regeneracao
+- Alimentos consumiveis com restauracao de fome
 - Mundo voxel procedural por chunks
 - Renderizacao apenas de faces visiveis
 - Texturas pixeladas originais geradas por codigo

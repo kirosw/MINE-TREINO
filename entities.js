@@ -140,6 +140,7 @@
       if (!creature.type.passive && !this.player.creative && playerDistance < 1.35 && creature.bumpTimer <= 0) {
         creature.bumpTimer = 1.2;
         this.audio.playCreature(false);
+        this.player.takeDamage(2, "Vulto");
         this.ui.showMessage("Um Vulto te empurrou. Use C para voar no criativo.");
       }
     }
