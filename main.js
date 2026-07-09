@@ -8,6 +8,7 @@
   const { CreatureManager } = window.VoxelEntities;
   const ui = window.VoxelUI;
   const audio = window.VoxelAudio;
+  const persistence = window.VoxelPersistence;
 
   let renderer;
   let scene;
@@ -20,6 +21,7 @@
   let lastTime = performance.now();
   let fpsFrames = 0;
   let fpsElapsed = 0;
+  let progressElapsed = 0;
   let running = false;
 
   init();
@@ -49,6 +51,7 @@
     scene.add(sun);
 
     world = new VoxelWorld(scene);
+    world.setSaveHandler(scheduleProgressSave);
     input = new InputController(renderer.domElement);
     player = new Player(camera, world, input);
     player.onStep = () => audio.playStep();
@@ -63,10 +66,12 @@
       running = true;
       audio.unlock();
       const playerName = ui.setPlayerName(ui.getPlayerName());
+      persistence.setPlayerName(playerName);
       ui.showGame();
       ui.showMessage(`Bem-vindo, ${playerName}`);
       creatures.seedNearPlayer();
       input.lockPointer();
+      loadRemoteProgress(playerName);
     });
 
     ui.playerNameInput.addEventListener("keydown", (event) => {
@@ -100,6 +105,7 @@
     const number = Number(event.key);
     if (number >= 1 && number <= 6) {
       ui.setSelected(number - 1);
+      scheduleProgressSave();
     }
 
     if (event.code === "KeyC" && !event.repeat) {
@@ -107,6 +113,7 @@
       ui.setCreative(enabled);
       audio.playModeToggle(enabled);
       ui.showMessage(enabled ? "Modo criativo ativado" : "Modo sobrevivencia ativado");
+      scheduleProgressSave();
     }
   }
 
@@ -120,6 +127,11 @@
       world.generateAround(player.position);
       creatures.update(dt);
       updateTargetHighlight();
+      progressElapsed += dt;
+      if (progressElapsed >= 5) {
+        progressElapsed = 0;
+        scheduleProgressSave();
+      }
     }
 
     world.updateMeshes(2);
@@ -174,5 +186,46 @@
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  async function loadRemoteProgress(playerName) {
+    const progress = await persistence.load(playerName);
+    if (!progress) return;
+
+    if (Array.isArray(progress.edits)) {
+      world.importEdits(progress.edits);
+    }
+
+    if (progress.player && Number.isFinite(progress.player.x) && Number.isFinite(progress.player.y) && Number.isFinite(progress.player.z)) {
+      player.position.set(progress.player.x, progress.player.y, progress.player.z);
+      player.velocity.set(0, 0, 0);
+      world.generateAround(player.position);
+    }
+
+    if (typeof progress.creative === "boolean") {
+      player.setCreative(progress.creative);
+      ui.setCreative(progress.creative);
+    }
+
+    if (Number.isInteger(progress.selectedBlock)) {
+      ui.setSelected(progress.selectedBlock);
+    }
+
+    ui.showSaveStatus("Progresso carregado");
+  }
+
+  function scheduleProgressSave() {
+    if (!running) return;
+    persistence.saveSoon({
+      version: 1,
+      player: {
+        x: player.position.x,
+        y: player.position.y,
+        z: player.position.z
+      },
+      creative: player.creative,
+      selectedBlock: ui.selectedIndex,
+      edits: world.exportEdits()
+    });
   }
 })();

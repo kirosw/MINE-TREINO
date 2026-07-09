@@ -1,0 +1,12 @@
+{
+  "name": "voxel-livre",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "python -m http.server 5174",
+    "check": "node --check blocks.js && node --check world.js && node --check controls.js && node --check player.js && node --check audio.js && node --check entities.js && node --check persistence.js && node --check ui.js && node --check main.js && node --check netlify/functions/progress.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
+  }
+}

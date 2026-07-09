@@ -229,7 +229,93 @@
         }
       }
 
+      this.placeSpawnCastle(chunk);
       chunk.generated = true;
+    }
+
+    placeSpawnCastle(chunk) {
+      const castle = {
+        minX: -12,
+        maxX: 12,
+        minZ: -34,
+        maxZ: -10,
+        baseY: this.terrainHeight(0, -22) + 1
+      };
+
+      const minChunkX = chunk.cx * this.chunkSize;
+      const minChunkZ = chunk.cz * this.chunkSize;
+
+      for (let z = 0; z < this.chunkSize; z++) {
+        for (let x = 0; x < this.chunkSize; x++) {
+          const wx = minChunkX + x;
+          const wz = minChunkZ + z;
+          if (wx < castle.minX - 1 || wx > castle.maxX + 1 || wz < castle.minZ - 1 || wz > castle.maxZ + 1) continue;
+
+          const inside = wx >= castle.minX && wx <= castle.maxX && wz >= castle.minZ && wz <= castle.maxZ;
+          const edgeX = wx === castle.minX || wx === castle.maxX;
+          const edgeZ = wz === castle.minZ || wz === castle.maxZ;
+          const gate = wz === castle.maxZ && wx >= -2 && wx <= 2;
+          const tower = isTowerCorner(wx, wz, castle);
+
+          for (let y = castle.baseY - 5; y < castle.baseY; y++) {
+            if (y >= 0) chunk.setLocal(x, y, z, BlockId.STONE);
+          }
+
+          for (let y = castle.baseY; y < castle.baseY + 14; y++) {
+            chunk.setLocal(x, y, z, BlockId.AIR);
+          }
+
+          if (!inside) continue;
+
+          chunk.setLocal(x, castle.baseY, z, BlockId.STONE);
+
+          if (tower) {
+            for (let y = castle.baseY + 1; y <= castle.baseY + 10; y++) {
+              chunk.setLocal(x, y, z, BlockId.STONE);
+            }
+            if ((wx + wz) % 2 === 0) {
+              chunk.setLocal(x, castle.baseY + 11, z, BlockId.STONE);
+            }
+            continue;
+          }
+
+          if ((edgeX || edgeZ) && !gate) {
+            for (let y = castle.baseY + 1; y <= castle.baseY + 6; y++) {
+              chunk.setLocal(x, y, z, BlockId.STONE);
+            }
+            if ((wx + wz) % 2 === 0) {
+              chunk.setLocal(x, castle.baseY + 7, z, BlockId.STONE);
+            }
+          }
+
+          if (gate && (wx === -2 || wx === 2)) {
+            for (let y = castle.baseY + 1; y <= castle.baseY + 5; y++) {
+              chunk.setLocal(x, y, z, BlockId.WOOD);
+            }
+          }
+
+          if (gate && wz === castle.maxZ && wx > -2 && wx < 2) {
+            chunk.setLocal(x, castle.baseY + 5, z, BlockId.WOOD);
+          }
+
+          if (wx >= -4 && wx <= 4 && wz >= -27 && wz <= -21) {
+            const keepAir = wx >= -2 && wx <= 2 && wz >= -25 && wz <= -22;
+            if (!keepAir) {
+              for (let y = castle.baseY + 1; y <= castle.baseY + 4; y++) {
+                chunk.setLocal(x, y, z, BlockId.WOOD);
+              }
+            }
+          }
+        }
+      }
+
+      function isTowerCorner(wx, wz, area) {
+        const nearWest = wx >= area.minX && wx <= area.minX + 3;
+        const nearEast = wx <= area.maxX && wx >= area.maxX - 3;
+        const nearNorth = wz >= area.minZ && wz <= area.minZ + 3;
+        const nearSouth = wz <= area.maxZ && wz >= area.maxZ - 3;
+        return (nearWest || nearEast) && (nearNorth || nearSouth);
+      }
     }
 
     placeTree(chunk, x, baseY, z) {
@@ -383,11 +469,29 @@
         } catch (error) {
           window.VoxelUI?.showMessage("Nao foi possivel salvar o mundo neste navegador.");
         }
+        if (this.onSave) this.onSave();
       }, 350);
     }
 
     resetSavedWorld() {
       localStorage.removeItem(this.options.saveKey);
+    }
+
+    setSaveHandler(handler) {
+      this.onSave = handler;
+    }
+
+    exportEdits() {
+      return Array.from(this.edits);
+    }
+
+    importEdits(entries) {
+      if (!Array.isArray(entries)) return;
+      this.edits = new Map(entries.filter((entry) => Array.isArray(entry) && typeof entry[0] === "string"));
+      for (const chunk of this.chunks.values()) {
+        this.applyEditsToChunk(chunk);
+        this.markChunkDirty(chunk.cx, chunk.cz);
+      }
     }
 
     raycast(origin, direction, maxDistance) {
