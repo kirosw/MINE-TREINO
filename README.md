@@ -16,6 +16,14 @@ Depois acesse:
 http://127.0.0.1:5174/
 ```
 
+Para persistencia no Neon, publique em um ambiente com Netlify Functions e configure:
+
+```text
+DATABASE_URL=postgresql://...
+```
+
+O schema esta em `sql/neon_schema.sql`. A funcao `/.netlify/functions/progress` tambem cria as tabelas automaticamente se elas nao existirem. Sem essa variavel, o jogo continua funcionando com `localStorage`.
+
 ## Controles
 
 - WASD: mover
@@ -32,11 +40,13 @@ http://127.0.0.1:5174/
 ## Recursos
 
 - Login local com nome salvo no navegador
+- Persistencia remota opcional no Neon para usuarios e progresso
 - Mundo voxel procedural por chunks
 - Renderizacao apenas de faces visiveis
 - Texturas pixeladas originais geradas por codigo
 - Blocos de grama, terra, pedra, madeira, folhas e areia
 - Arvores simples
+- Castelo de Voxelandia gerado proximo ao spawn inicial
 - Criaturas voxeladas originais com caminhada, sons e comportamento simples
 - Primeira pessoa com colisao, gravidade e pulo
 - Modo criativo com voo
