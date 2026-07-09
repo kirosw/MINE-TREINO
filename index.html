@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voxel Livre</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="start-screen" class="overlay">
+    <div class="start-panel">
+      <h1>Voxel Livre</h1>
+      <p>Um prototipo sandbox voxel original para navegador.</p>
+      <button id="play-button">Jogar</button>
+      <button id="reset-button" class="secondary">Resetar mundo salvo</button>
+      <div class="instructions">
+        <span>WASD mover</span>
+        <span>Mouse olhar</span>
+        <span>Espaco pular/subir</span>
+        <span>Shift correr</span>
+        <span>Ctrl descer no criativo</span>
+        <span>C alternar criativo</span>
+        <span>Botao esquerdo quebrar</span>
+        <span>Botao direito colocar</span>
+        <span>1-6 selecionar bloco</span>
+        <span>ESC libera o mouse</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-ui" class="hidden">
+    <div id="fps-counter">FPS 0</div>
+    <div id="mode-status">Sobrevivencia</div>
+    <div id="save-status"></div>
+    <div id="crosshair"></div>
+    <div id="hotbar"></div>
+  </div>
+
+  <div id="message" class="message hidden"></div>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="blocks.js"></script>
+  <script src="world.js"></script>
+  <script src="controls.js"></script>
+  <script src="player.js"></script>
+  <script src="audio.js"></script>
+  <script src="ui.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
